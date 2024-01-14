@@ -48,15 +48,20 @@ namespace CarRental.Controllers
         {
             var user = userManager.GetUserAsync(User).Result;
             List<Car> carsFromDb = new List<Car>();
-            if (userManager.IsInRoleAsync(user, "Admin").Result)
+            if (user != null)
             {
-                carsFromDb = _carRepository.GetAllCars();
-            }
-            else
+                if (userManager.IsInRoleAsync(user, "Admin").Result)
+                {
+                    carsFromDb = _carRepository.GetAllCars();
+                }
+                else
+                {
+                    carsFromDb = _carRepository.GetAllCars().Where(c => c.Availability == true).ToList();
+                }
+            } else
             {
                 carsFromDb = _carRepository.GetAllCars().Where(c => c.Availability == true).ToList();
             }
-
             
             List<AvailableCarViewModel> carsForView = new List<AvailableCarViewModel>();
 
